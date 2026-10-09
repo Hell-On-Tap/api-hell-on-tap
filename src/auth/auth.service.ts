@@ -7,7 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { compare, hash } from 'bcryptjs';
 import { QueryFailedError } from 'typeorm';
 import { toPublicUser, User } from '../users/user.entity';
-import { UsersService } from '../users/users.service';
+import { isReservedNickname, UsersService } from '../users/users.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 
@@ -28,7 +28,10 @@ export class AuthService {
   ) {}
 
   async register(dto: RegisterDto) {
-    if (await this.users.existsByNickname(dto.nickname)) {
+    if (
+      isReservedNickname(dto.nickname) ||
+      (await this.users.existsByNickname(dto.nickname))
+    ) {
       throw new ConflictException('Esse apelido já está em uso.');
     }
     if (await this.users.existsByEmail(dto.email)) {

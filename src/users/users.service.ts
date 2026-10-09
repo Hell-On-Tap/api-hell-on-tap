@@ -3,6 +3,21 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
 
+/** Apelidos que colidem com rotas da API/front (/profiles/me, /profiles/images...). */
+const RESERVED = new Set([
+  'me',
+  'images',
+  'admin',
+  'api',
+  'perfil',
+  'login',
+  'registro',
+]);
+
+export function isReservedNickname(nickname: string) {
+  return RESERVED.has(nickname.toLowerCase());
+}
+
 @Injectable()
 export class UsersService {
   constructor(

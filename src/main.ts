@@ -5,9 +5,17 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // só o front do Hell on Tap pode chamar a API pelo navegador
+  // CORS_ORIGIN no .env: lista de origens permitidas, separadas por vírgula
+  // (ex.: https://hellontap.com,http://localhost:3001).
+  // Sem CORS_ORIGIN, qualquer origem é aceita. Isso equivale ao "*", mas
+  // devolvendo a origem de quem chamou, porque o navegador recusa "*" quando a
+  // requisição usa credentials.
+  const allowed = (process.env.CORS_ORIGIN ?? '')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
   app.enableCors({
-    origin: (process.env.FRONT_URL ?? 'http://localhost:3001').split(','),
+    origin: allowed.length ? allowed : true,
     credentials: true,
   });
 

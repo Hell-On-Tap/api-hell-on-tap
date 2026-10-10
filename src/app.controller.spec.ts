@@ -20,3 +20,15 @@ describe('AppController', () => {
     });
   });
 });
+
+describe('AppController config', () => {
+  it('devolve o link do jogo de GAME_URL (sem barra no fim)', () => {
+    const controller = new AppController(new AppService());
+    process.env.GAME_URL = 'http://localhost:2500/';
+    expect(controller.config()).toEqual({ gameUrl: 'http://localhost:2500' });
+    process.env.GAME_URL = 'javascript:alert(1)';
+    expect(controller.config()).toEqual({ gameUrl: null });
+    delete process.env.GAME_URL;
+    expect(controller.config()).toEqual({ gameUrl: null });
+  });
+});

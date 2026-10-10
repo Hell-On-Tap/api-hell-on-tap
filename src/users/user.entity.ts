@@ -43,6 +43,10 @@ export class User {
   @Column({ name: 'banner_updated_at', type: 'timestamptz', nullable: true })
   bannerUpdatedAt: Date | null;
 
+  /** Moldura em volta da foto do perfil (false = foto solta, sem borda). */
+  @Column({ name: 'avatar_frame', type: 'boolean', default: true })
+  avatarFrame: boolean;
+
   /** Último sinal de vida do site aberto (amigos veem online/offline). */
   @Column({ name: 'last_seen_at', type: 'timestamptz', nullable: true })
   lastSeenAt: Date | null;

@@ -75,6 +75,8 @@ export class ClansService {
       name: clan.name,
       joinPolicy: clan.joinPolicy,
       logoUrl: this.imageUrl(clan, 'logo'),
+      logoFrame: clan.logoFrame,
+      background: clan.background,
       memberCount,
     };
   }
@@ -338,6 +340,9 @@ export class ClansService {
     if (dto.description !== undefined)
       clan.description = dto.description || null;
     if (dto.joinPolicy !== undefined) clan.joinPolicy = dto.joinPolicy;
+    if (dto.logoFrame !== undefined) clan.logoFrame = dto.logoFrame;
+    if (dto.background !== undefined)
+      clan.background = dto.background ? dto.background.toLowerCase() : null;
     try {
       await this.clans.save(clan);
     } catch (err) {

@@ -25,6 +25,8 @@ export type Profile = {
   avatarUrl: string | null;
   bannerUrl: string | null;
   memberSince: string;
+  /** moldura em volta da foto (false = sem borda) */
+  avatarFrame: boolean;
   /** seções do perfil na ordem escolhida; visible=false = oculta */
   layout: ProfileSection[];
 };
@@ -64,6 +66,7 @@ export class ProfilesService {
       avatarUrl: url('avatar', user.avatarUpdatedAt),
       bannerUrl: url('banner', user.bannerUpdatedAt),
       memberSince: user.createdAt.toISOString(),
+      avatarFrame: user.avatarFrame,
       layout: normalizeLayout(user.profileLayout),
     };
   }
@@ -143,6 +146,7 @@ export class ProfilesService {
     if (dto.displayName !== undefined)
       user.displayName = dto.displayName || null;
     if (dto.bio !== undefined) user.bio = dto.bio || null;
+    if (dto.avatarFrame !== undefined) user.avatarFrame = dto.avatarFrame;
     if (dto.layout !== undefined)
       user.profileLayout = normalizeLayout(dto.layout);
 

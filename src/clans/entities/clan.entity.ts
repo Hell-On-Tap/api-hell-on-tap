@@ -48,6 +48,17 @@ export class Clan {
   @Column({ name: 'logo_updated_at', type: 'timestamptz', nullable: true })
   logoUpdatedAt: Date | null;
 
+  /**
+   * Cor de fundo do clã (página e cartões): id de fundo pronto, "#rrggbb" ou
+   * gradiente "grad:<ângulo>:<#de>:<#para>". null = padrão do site.
+   */
+  @Column({ type: 'varchar', length: 40, nullable: true })
+  background: string | null;
+
+  /** Moldura em volta da logo (false = logo solta, sem borda). */
+  @Column({ name: 'logo_frame', type: 'boolean', default: true })
+  logoFrame: boolean;
+
   @Column({ name: 'banner_updated_at', type: 'timestamptz', nullable: true })
   bannerUpdatedAt: Date | null;
 

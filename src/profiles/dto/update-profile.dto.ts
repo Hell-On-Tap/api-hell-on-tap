@@ -38,6 +38,11 @@ export class UpdateProfileDto {
   @MaxLength(300, { message: 'A descrição pode ter no máximo 300 caracteres.' })
   bio?: string;
 
+  /** Moldura em volta da foto do perfil. */
+  @IsOptional()
+  @IsBoolean({ message: 'Informe se a foto tem moldura ou não.' })
+  avatarFrame?: boolean;
+
   /** Ordem das seções (de cima para baixo) e se cada uma aparece. */
   @IsOptional()
   @IsArray({ message: 'Envie a lista de seções.' })

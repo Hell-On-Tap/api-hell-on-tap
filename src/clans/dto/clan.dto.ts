@@ -46,6 +46,10 @@ export class CreateClanDto {
   joinPolicy?: JoinPolicy;
 }
 
+/** Fundos prontos (mesmos ids do front), cor #rrggbb ou gradiente grad:<0-359>:#de:#para. Vazio = padrão. */
+export const CLAN_BACKGROUND =
+  /^$|^(inferno|brasa)$|^#[0-9a-fA-F]{6}$|^grad:(3[0-5]\d|[12]?\d?\d):#[0-9a-fA-F]{6}:#[0-9a-fA-F]{6}$/;
+
 export class UpdateClanDto {
   @IsOptional()
   @Transform(trim)
@@ -68,6 +72,20 @@ export class UpdateClanDto {
   @IsOptional()
   @IsIn(JOIN_POLICIES, { message: POLICY_MSG })
   joinPolicy?: JoinPolicy;
+
+  /** Cor de fundo do clã. Texto vazio volta ao padrão. */
+  @IsOptional()
+  @Transform(trim)
+  @IsString()
+  @Matches(CLAN_BACKGROUND, {
+    message: 'Fundo inválido. Use uma cor #rrggbb ou um gradiente.',
+  })
+  background?: string;
+
+  /** Moldura em volta da logo. */
+  @IsOptional()
+  @IsBoolean({ message: 'Informe se a logo tem borda ou não.' })
+  logoFrame?: boolean;
 }
 
 export class InviteDto {

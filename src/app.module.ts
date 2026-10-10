@@ -8,6 +8,7 @@ import { dataSourceOptions } from './database/data-source';
 import { ClansModule } from './clans/clans.module';
 import { FriendsModule } from './friends/friends.module';
 import { ProfilesModule } from './profiles/profiles.module';
+import { StatsModule } from './stats/stats.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -24,6 +25,7 @@ import { UsersModule } from './users/users.module';
     ProfilesModule,
     ClansModule,
     FriendsModule,
+    StatsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

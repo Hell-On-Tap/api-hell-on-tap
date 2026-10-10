@@ -5,6 +5,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import type { ProfileSection } from '../profiles/profile-layout';
 
 @Entity('users')
 export class User {
@@ -41,6 +42,14 @@ export class User {
 
   @Column({ name: 'banner_updated_at', type: 'timestamptz', nullable: true })
   bannerUpdatedAt: Date | null;
+
+  /** Último sinal de vida do site aberto (amigos veem online/offline). */
+  @Column({ name: 'last_seen_at', type: 'timestamptz', nullable: true })
+  lastSeenAt: Date | null;
+
+  /** Ordem e visibilidade das seções do perfil. null = ordem padrão. */
+  @Column({ name: 'profile_layout', type: 'jsonb', nullable: true })
+  profileLayout: ProfileSection[] | null;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt: Date;

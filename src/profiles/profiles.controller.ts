@@ -14,6 +14,7 @@ import {
   Patch,
   PipeTransform,
   Put,
+  Query,
   Req,
   Res,
   UploadedFile,
@@ -114,6 +115,12 @@ export class ProfilesController {
       'X-Content-Type-Options': 'nosniff',
     });
     res.send(image.data);
+  }
+
+  /** Lista de jogadores: busca por apelido ou nome (sem busca: os mais novos). */
+  @Get()
+  search(@Query('search') search?: string, @Query('offset') offset?: string) {
+    return this.profiles.search(search ?? '', Number(offset) || 0);
   }
 
   @Get(':nickname')

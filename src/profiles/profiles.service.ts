@@ -10,6 +10,7 @@ import { User } from '../users/user.entity';
 import { isReservedNickname } from '../users/users.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { ImageKind, UserImage } from './user-image.entity';
+import { normalizeLayout, type ProfileSection } from './profile-layout';
 
 export const IMAGE_KINDS: ImageKind[] = ['avatar', 'banner'];
 export const MAX_IMAGE_BYTES = 2 * 1024 * 1024;
@@ -24,10 +25,12 @@ export type Profile = {
   avatarUrl: string | null;
   bannerUrl: string | null;
   memberSince: string;
+  /** seções do perfil na ordem escolhida; visible=false = oculta */
+  layout: ProfileSection[];
 };
 
 /** Identifica o formato pelos primeiros bytes (não confia no nome nem no tipo enviado). */
-function detectImageType(data: Buffer): string | null {
+export function detectImageType(data: Buffer): string | null {
   if (data.length < 12) return null;
   if (data[0] === 0x89 && data.subarray(1, 4).toString('latin1') === 'PNG')
     return 'image/png';
@@ -61,6 +64,48 @@ export class ProfilesService {
       avatarUrl: url('avatar', user.avatarUpdatedAt),
       bannerUrl: url('banner', user.bannerUpdatedAt),
       memberSince: user.createdAt.toISOString(),
+      layout: normalizeLayout(user.profileLayout),
+    };
+  }
+
+  /** Jogadores por apelido ou nome; 24 por página. */
+  async search(term: string, offset = 0) {
+    const limit = 24;
+    const q = term.trim().toLowerCase().slice(0, 32);
+    const qb = this.users
+      .createQueryBuilder('u')
+      .orderBy('u.created_at', 'DESC')
+      .skip(Math.max(0, Math.min(offset, 10_000)))
+      .take(limit + 1);
+    if (q) {
+      // escapa % e _ para buscar o texto literal
+      const safe = q.replace(/[\\%_]/g, (c) => `\\${c}`);
+      const like = `%${safe}%`;
+      qb.where(
+        '(u.nickname_key LIKE :like OR LOWER(u.display_name) LIKE :like)',
+        { like },
+      )
+        // quem começa com o termo aparece antes
+        .orderBy(
+          'CASE WHEN u.nickname_key LIKE :prefix THEN 0 ELSE 1 END',
+          'ASC',
+        )
+        .addOrderBy('u.nickname_key', 'ASC')
+        .setParameter('prefix', `${safe}%`);
+    }
+    const users = await qb.getMany();
+    return {
+      players: users.slice(0, limit).map((u) => {
+        const p = this.toProfile(u);
+        return {
+          id: p.id,
+          nickname: p.nickname,
+          displayName: p.displayName,
+          avatarUrl: p.avatarUrl,
+          memberSince: p.memberSince,
+        };
+      }),
+      hasMore: users.length > limit,
     };
   }
 
@@ -98,6 +143,8 @@ export class ProfilesService {
     if (dto.displayName !== undefined)
       user.displayName = dto.displayName || null;
     if (dto.bio !== undefined) user.bio = dto.bio || null;
+    if (dto.layout !== undefined)
+      user.profileLayout = normalizeLayout(dto.layout);
 
     try {
       await this.users.save(user);

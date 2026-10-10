@@ -5,6 +5,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { dataSourceOptions } from './database/data-source';
+import { ClansModule } from './clans/clans.module';
+import { FriendsModule } from './friends/friends.module';
 import { ProfilesModule } from './profiles/profiles.module';
 import { UsersModule } from './users/users.module';
 
@@ -20,6 +22,8 @@ import { UsersModule } from './users/users.module';
     UsersModule,
     AuthModule,
     ProfilesModule,
+    ClansModule,
+    FriendsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

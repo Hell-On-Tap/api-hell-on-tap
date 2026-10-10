@@ -1,5 +1,16 @@
-import { Transform } from 'class-transformer';
-import { IsOptional, IsString, Matches, MaxLength } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import {
+  ArrayMaxSize,
+  IsArray,
+  IsBoolean,
+  IsIn,
+  IsOptional,
+  IsString,
+  Matches,
+  MaxLength,
+  ValidateNested,
+} from 'class-validator';
+import { PROFILE_SECTIONS } from '../profile-layout';
 
 const trim = ({ value }: { value: unknown }) =>
   typeof value === 'string' ? value.trim() : value;
@@ -26,4 +37,20 @@ export class UpdateProfileDto {
   @IsString()
   @MaxLength(300, { message: 'A descrição pode ter no máximo 300 caracteres.' })
   bio?: string;
+
+  /** Ordem das seções (de cima para baixo) e se cada uma aparece. */
+  @IsOptional()
+  @IsArray({ message: 'Envie a lista de seções.' })
+  @ArrayMaxSize(20)
+  @ValidateNested({ each: true })
+  @Type(() => ProfileSectionDto)
+  layout?: ProfileSectionDto[];
+}
+
+export class ProfileSectionDto {
+  @IsIn(PROFILE_SECTIONS, { message: 'Seção do perfil desconhecida.' })
+  id: string;
+
+  @IsBoolean({ message: 'Informe se a seção aparece ou não.' })
+  visible: boolean;
 }
